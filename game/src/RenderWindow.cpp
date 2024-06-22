@@ -12,8 +12,8 @@ RenderWindow::RenderWindow(const char* title, int width, int height)
 	if (m_renderer == NULL)
 		std::cout << "SDL_CreateRenderer failed, SDL Error: " << SDL_GetError() << std::endl;
 
-	//if (SDL_RenderSetLogicalSize(m_renderer, 1280, 720) < 0)
-	//	std::cout << "SDL_RenderSetLogicalSize failed, SDL Error: " << SDL_GetError() << std::endl;
+	if (SDL_RenderSetLogicalSize(m_renderer, 1920, 1080) < 0)
+		std::cout << "SDL_RenderSetLogicalSize failed, SDL Error: " << SDL_GetError() << std::endl;
 
 	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
 }
@@ -40,7 +40,7 @@ void RenderWindow::clearFrame()
 	SDL_RenderClear(m_renderer);
 }
 
-void RenderWindow::renderObject(GameObject* obj)
+void RenderWindow::renderObject(const std::shared_ptr<GameObject> obj)
 {
 	SDL_Rect src = { 0, 0, obj->getWidth(), obj->getHeight() };
 	// explicit conversion required, otherwise it acts normal in 1280x720 but completely off when its 1920x1080, idk why
@@ -49,9 +49,9 @@ void RenderWindow::renderObject(GameObject* obj)
 	SDL_RenderCopy(m_renderer, obj->getTexture(), &src, &dst);
 }
 
-void RenderWindow::renderAll(const std::vector<GameObject*>& gameObjects)
+void RenderWindow::renderAll(const std::vector<std::shared_ptr<GameObject>>& gameObjects)
 {
-	for (GameObject* obj : gameObjects)
+	for (const std::shared_ptr<GameObject>& obj : gameObjects)
 	{
 		renderObject(obj);
 	}

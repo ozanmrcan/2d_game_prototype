@@ -3,6 +3,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <vector>
+#include <memory>
 
 #include "configs.h"
 #include "GameObject.h"
@@ -18,18 +20,18 @@ public:
 	Game();
 	void run();	
 private:
-	GameStates gameState = GameStates::TITLE_SCREEN; // change to 0 to start from main menu after implementing it
-	std::vector<GameObject*> gameObjects; 
-	Player* player;
+	GameStates gameState;
+	std::vector<std::shared_ptr<GameObject>> gameObjects; 
+	std::shared_ptr<Player> player;
 	RenderWindow window;
 	InputHandler inputHandler;
 	bool isRunning;
 
 	void handleInputs();
-	void update(double deltaTime, Player& player);
+	void update(double deltaTime);
 	void render();
-	GameObject createObject(const char* spritePath, double x, double y);
-	Player createPlayer(const char* spritePath, double x, double y);
+	std::shared_ptr<GameObject> createObject(const char* spritePath, double x, double y);
+	std::shared_ptr<Player> createPlayer(const char* spritePath, double x, double y);
 	void loadLevel(RenderWindow window);
 	void initializeSDLSubSystems();
 	void quitSDLSubSystems();

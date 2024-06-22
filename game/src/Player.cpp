@@ -21,7 +21,7 @@ void Player::updatePos(double deltaTime)
 
 void Player::jump()
 {
-	m_velY += -100;      
+	m_velY -= PLAYER_JUMP_STRENGTH;
 	// state change to onAir
 }
 

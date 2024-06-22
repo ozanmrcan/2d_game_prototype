@@ -10,8 +10,8 @@ void Game::run()
 	double deltaTime = 0;
 
 	// this will change later on, i will create everything in a loadLevel() func, might dynamically allocate too
-	Player player = createPlayer("res/gfx/player.png", SCREEN_WIDTH/2 - 60, SCREEN_HEIGHT/2 - 100);	
-	GameObject testFloor = createObject("res/gfx/testFloor.png", 0, SCREEN_HEIGHT - 200);
+	player = createPlayer("res/gfx/player.png", SCREEN_WIDTH/2 - 60, SCREEN_HEIGHT/2 - 100);	
+	createObject("res/gfx/testFloor.png", 0, SCREEN_HEIGHT - 200);
 	//loadLevel();
 
 	SDL_Event event;
@@ -36,7 +36,7 @@ void Game::run()
 			break;
 		case GameStates::GAMEPLAY:
 			handleInputs();
-			update(deltaTime, player);
+			update(deltaTime);
 			render();
 			break;
 		}
@@ -47,7 +47,10 @@ void Game::run()
 }
 
 Game::Game()
-	:isRunning{ true }, window{ WINDOW_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT }, player{ NULL }
+	:isRunning{ true }, 
+	window{ WINDOW_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT }, 
+	gameState{GameStates::TITLE_SCREEN}
+	// shared_ptr initializes to null by default
 { }
 
 void Game::handleInputs()
@@ -59,11 +62,11 @@ void Game::handleInputs()
 	}
 }
 
-void Game::update(double deltaTime, Player& player)
+void Game::update(double deltaTime)
 {
-	player.updatePos(deltaTime);
+	player->updatePos(deltaTime);
 	if (inputHandler.isKeyDown(SDL_SCANCODE_SPACE))
-		player.jump();
+		player->jump();
 }
 
 void Game::render()
@@ -73,22 +76,22 @@ void Game::render()
 	window.presentFrame();
 }
 
-GameObject Game::createObject(const char* spritePath, double x, double y)
+std::shared_ptr<GameObject> Game::createObject(const char* spritePath, double x, double y)
 {
 	SDL_Texture* texture = window.loadTexture(spritePath);
-	GameObject object{ texture, x, y };
-	gameObjects.push_back(&object);
+	std::shared_ptr<GameObject> objPtr = std::make_unique<GameObject>(texture, x, y);
+	gameObjects.push_back(objPtr);
 
-	return object;
+	return objPtr;
 }
 
-Player Game::createPlayer(const char* spritePath, double x, double y) 
+std::shared_ptr<Player> Game::createPlayer(const char* spritePath, double x, double y) 
 {
 	SDL_Texture* texture = window.loadTexture(spritePath);
-	Player player{ texture, x, y };
-	gameObjects.push_back(&player);
+	std::shared_ptr<Player> playerPtr = std::make_shared<Player>(texture, x, y);
+	gameObjects.push_back(playerPtr);
 
-	return player;
+	return playerPtr;
 }
 
 void Game::loadLevel(RenderWindow window)
