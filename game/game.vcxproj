@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\MapManager.cpp" />
+    <ClCompile Include="src\Tile.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\InputHandler.cpp" />
@@ -31,8 +33,10 @@
     <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\GameObject.h" />
     <ClInclude Include="include\InputHandler.h" />
+    <ClInclude Include="include\MapManager.h" />
     <ClInclude Include="include\Player.h" />
     <ClInclude Include="include\RenderWindow.h" />
+    <ClInclude Include="include\Tile.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

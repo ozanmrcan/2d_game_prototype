@@ -14,8 +14,11 @@ public:
 	int getHeight() const;
 	Coordinate getPos() const;
 	SDL_Texture* getTexture() const;
+	SDL_Rect getCollisionBox() const;
 	// setters
 	void setYcor(double y);
+	void setXcor(double x);
+	void updateCollisionBoxPos();
 
 private:
 	SDL_Texture* m_texture;

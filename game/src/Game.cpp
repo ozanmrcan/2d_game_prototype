@@ -9,10 +9,8 @@ void Game::run()
 	Uint64 currentTime = 0;
 	double deltaTime = 0;
 
-	// this will change later on, i will create everything in a loadLevel() func, might dynamically allocate too
-	player = createPlayer("res/gfx/player.png", SCREEN_WIDTH/2 - 60, SCREEN_HEIGHT/2 - 100);	
-	createObject("res/gfx/testFloor.png", 0, SCREEN_HEIGHT - 200);
-	//loadLevel();
+	loadLevel(); // more like load tiles and give them to Game
+	player = createPlayer("res/gfx/player.png", 400 , LOGICAL_HEIGHT / 2 - 32);
 
 	SDL_Event event;
 	while (isRunning)
@@ -49,30 +47,27 @@ void Game::run()
 Game::Game()
 	:isRunning{ true }, 
 	window{ WINDOW_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT }, 
-	gameState{GameStates::TITLE_SCREEN}
-	// shared_ptr initializes to null by default
+	gameState{ GameStates::TITLE_SCREEN },
+	camera{ 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT }
 { }
 
 void Game::handleInputs()
 {
 	inputHandler.update();
-	if (inputHandler.isKeyDown(SDL_SCANCODE_UP))
-	{
-		std::cout << "pressed up!\n";
-	}
 }
 
 void Game::update(double deltaTime)
 {
-	player->updatePos(deltaTime);
-	if (inputHandler.isKeyDown(SDL_SCANCODE_SPACE))
-		player->jump();
+	player->updatePos(tiles, deltaTime);
+	updateCameraPos();
 }
 
 void Game::render()
 {
+	
 	window.clearFrame();
-	window.renderAll(gameObjects);
+	//render tiles here
+	window.renderAll(gameObjects, tiles, camera);
 	window.presentFrame();
 }
 
@@ -88,15 +83,32 @@ std::shared_ptr<GameObject> Game::createObject(const char* spritePath, double x,
 std::shared_ptr<Player> Game::createPlayer(const char* spritePath, double x, double y) 
 {
 	SDL_Texture* texture = window.loadTexture(spritePath);
-	std::shared_ptr<Player> playerPtr = std::make_shared<Player>(texture, x, y);
+	std::shared_ptr<Player> playerPtr = std::make_shared<Player>(inputHandler, texture, x, y);
 	gameObjects.push_back(playerPtr);
 
 	return playerPtr;
 }
 
-void Game::loadLevel(RenderWindow window)
+void Game::updateCameraPos()
 {
+	//if (player->getPos().x < camera.x + camera.w / 4.0)
+	//{
+	//	camera.x = int(player->getPos().x + player->getWidth() / 2.0 - camera.w / 4.0);
+	//}
+	//else if (player->getPos().x > camera.x + 3.0 * camera.w / 4.0)
+	//{
+	//	camera.x = int(player->getPos().x + player->getWidth() / 2.0 - 3 * camera.w / 4.0);
+	//}
+	camera.x = int(player->getPos().x + player->getWidth() / 2.0 - LOGICAL_WIDTH / 2.0);
+	camera.y = int(player->getPos().y + player->getHeight() / 2.0 - LOGICAL_HEIGHT / 2.0);
+}
 
+// placeholder 
+void Game::loadLevel()
+{
+	// TERRIBLE COUPLING BUT EH
+	mapManager.loadMap(window.getRenderer());
+	tiles = mapManager.getMap();
 }
 
 void Game::initializeSDLSubSystems()

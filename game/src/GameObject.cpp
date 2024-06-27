@@ -27,7 +27,23 @@ SDL_Texture* GameObject::getTexture() const
 	return m_texture;
 }
 
+SDL_Rect GameObject::getCollisionBox() const
+{
+	return m_collisionBox;
+}
+
 void GameObject::setYcor(double y)
 {
 	this->m_pos.y = y;
+}
+
+void GameObject::setXcor(double x)
+{
+	this->m_pos.x = x;
+}
+
+void GameObject::updateCollisionBoxPos()
+{
+	m_collisionBox.x = m_pos.x;
+	m_collisionBox.y = m_pos.y;
 }
